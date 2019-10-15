@@ -37,7 +37,7 @@ def highlightjs_css_url():
 
 
 @register.simple_tag
-def highlightjs_javascript(jquery=None):
+def highlightjs_javascript(jquery=None, defer=True):
     """
     Return HTML for highlightjs JavaScript.
 
@@ -55,6 +55,7 @@ def highlightjs_javascript(jquery=None):
     **Parameters**:
 
         :jquery: Truthy to include jQuery as well as highlightjs
+        :defer: Whether included scripts are defer
 
     **usage**::
 
@@ -65,6 +66,8 @@ def highlightjs_javascript(jquery=None):
         {% highlightjs_javascript jquery=1 %}
     """
 
+    defer_str = ' defer' if defer else ''
+
     javascript = ''
     # See if we have to include jQuery
     if jquery is None:
@@ -72,11 +75,14 @@ def highlightjs_javascript(jquery=None):
     if jquery:
         url = highlightjs_jquery_url()
         if url:
-            javascript += '<script src="{url}" defer></script>'.format(url=url)
+            javascript += '<script src="{url}"{defer_str}></script>'.format(url=url, defer_str=defer_str)
     url = highlightjs_url()
     if url:
-        javascript += '<script src="{url}" defer></script>'.format(url=url)
-    javascript += '<script defer>hljs.initHighlightingOnLoad();</script>'
+        javascript += '<script src="{url}"{defer_str}></script>'.format(url=url, defer_str=defer_str)
+    if defer:
+        javascript += '<script>window.addEventListener("DOMContentLoaded", function(){hljs.initHighlighting();});</script>'
+    else:
+        javascript += '<script>hljs.initHighlightingOnLoad();</script>'
     return mark_safe(javascript)
 
 
