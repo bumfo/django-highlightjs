@@ -80,7 +80,7 @@ def highlightjs_javascript(jquery=None, defer=True):
     if url:
         javascript += '<script src="{url}"{defer_str}></script>'.format(url=url, defer_str=defer_str)
     if defer:
-        javascript += '<script>window.addEventListener("DOMContentLoaded", function(){hljs.initHighlighting();});</script>'
+        javascript += '<script src="data:text/javascript,hljs.initHighlightingOnLoad%28%29" defer></script>'
     else:
         javascript += '<script>hljs.initHighlightingOnLoad();</script>'
     return mark_safe(javascript)
